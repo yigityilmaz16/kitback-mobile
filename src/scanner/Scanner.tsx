@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useEffect, useState } from 'react';
 import { AppState, Linking, Text, View } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -37,14 +38,15 @@ export function Scanner({ onScan }: { onScan: (data: string) => void }) {
   if (!permission.granted)
     return (
       <View style={s.card}>
-        <Text style={s.heading}>Camera access needed</Text>
+        <Text style={s.heading}>{t('Camera access needed')}</Text>
         <Text style={s.muted}>
-          Allow the camera to scan equipment labels. Your images stay on this device. You can also
-          enter an identifier manually.
+          {t(
+            'Allow the camera to scan equipment labels. Your images stay on this device. You can also enter an identifier manually.',
+          )}
         </Text>
         <Failure message={error} />
         <Button
-          title={permission.canAskAgain ? 'Allow camera' : 'Open Android settings'}
+          title={permission.canAskAgain ? t('Allow camera') : t('Open Android settings')}
           onPress={() => void (permission.canAskAgain ? grant() : settings())}
         />
       </View>
@@ -54,7 +56,7 @@ export function Scanner({ onScan }: { onScan: (data: string) => void }) {
       <View
         style={{
           height: 280,
-          borderRadius: 20,
+          borderRadius: 12,
           overflow: 'hidden',
           backgroundColor: '#030705',
           borderWidth: 1,
@@ -85,7 +87,7 @@ export function Scanner({ onScan }: { onScan: (data: string) => void }) {
               ],
             }}
             onBarcodeScanned={(result) => onScan(result.data)}
-            onMountError={(e) => setError(e.message || 'Camera could not start.')}
+            onMountError={(e) => setError(e.message || t('Camera could not start.'))}
           />
         )}
         <View
@@ -97,8 +99,8 @@ export function Scanner({ onScan }: { onScan: (data: string) => void }) {
             right: 35,
             bottom: 55,
             borderWidth: 2,
-            borderColor: colors.green,
-            borderRadius: 16,
+            borderColor: '#FFFFFF',
+            borderRadius: 8,
           }}
         />
       </View>
@@ -111,7 +113,7 @@ export function Scanner({ onScan }: { onScan: (data: string) => void }) {
       />
       <Button
         secondary
-        title="Restart camera"
+        title={t('Restart camera')}
         onPress={() => {
           setError(null);
           setGeneration((x) => x + 1);
@@ -119,7 +121,7 @@ export function Scanner({ onScan }: { onScan: (data: string) => void }) {
       />
       <Button
         secondary
-        title={torch ? 'Turn flashlight off' : 'Turn flashlight on'}
+        title={torch ? t('Turn flashlight off') : t('Turn flashlight on')}
         onPress={() => setTorch((x) => !x)}
       />
     </View>

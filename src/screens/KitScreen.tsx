@@ -1,4 +1,5 @@
-import { ScrollView, Text, View } from 'react-native';
+import { t, formatDate } from '../i18n';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useState } from 'react';
 import { useRepository } from '../data/context';
 import { Button, Failure, GearPhoto, Loading, message } from '../ui/components';
@@ -27,53 +28,59 @@ export function KitScreen({ navigation, route }: ScreenProps<'Kit'>) {
     <ScrollView style={s.page} contentContainerStyle={s.content}>
       <Failure message={query.error} retry={query.reload} />
       {!query.data && !query.error && <Loading />}
-      <Text style={s.title}>{query.data?.kit?.name ?? 'Your kit'}</Text>
+      <Text style={s.title}>{query.data?.kit?.name ?? t('Your kit')}</Text>
       <Text style={s.muted}>
-        Each item is a physical piece of gear. Two identical batteries need two unique labels.
+        {t(
+          'Each item is a physical piece of gear. Two identical batteries need two unique labels.',
+        )}
       </Text>
       <Button
-        title="Add equipment"
+        title={t('Add equipment')}
         secondary
         onPress={() => navigation.navigate('Equipment', { kitId })}
       />
       {query.data?.items.map((item) => (
-        <View key={item.id} style={s.card}>
-          <View style={s.row}>
-            <GearPhoto photo={item.photo} />
-            <View style={s.grow}>
-              <Text style={s.heading}>{item.name}</Text>
-              <Text style={s.muted}>{item.barcode}</Text>
-            </View>
+        <Pressable
+          key={item.id}
+          style={s.listItem}
+          accessibilityRole="button"
+          accessibilityLabel={item.name + ', ' + t('Edit equipment')}
+          onPress={() => navigation.navigate('Equipment', { kitId, equipmentId: item.id })}
+        >
+          <GearPhoto photo={item.photo} />
+          <View style={s.grow}>
+            <Text style={s.heading}>{item.name}</Text>
+            <Text style={s.muted}>{item.barcode}</Text>
           </View>
-          <Button
-            title="Edit equipment"
-            secondary
-            onPress={() => navigation.navigate('Equipment', { kitId, equipmentId: item.id })}
-          />
-        </View>
+          <Text style={s.muted}>›</Text>
+        </Pressable>
       ))}
       {query.data?.items.length === 0 && (
-        <Text style={s.muted}>No equipment yet. Add the items you will take to your shoot.</Text>
+        <Text style={s.muted}>
+          {t('No equipment yet. Add the items you will take to your shoot.')}
+        </Text>
       )}
       <Failure message={error} />
       <Button
-        title={active ? 'Continue active shoot' : 'Start shoot'}
+        title={active ? t('Continue active shoot') : t('Start shoot')}
         disabled={!active && !query.data?.items.length}
         onPress={start}
       />
       <Text style={s.muted}>
-        Starting a shoot freezes the expected list. Later kit changes apply only to new shoots.
+        {t(
+          'Starting a shoot freezes the expected list. Later kit changes apply only to new shoots.',
+        )}
       </Text>
-      <Text style={s.heading}>Shoot history</Text>
+      <Text style={s.heading}>{t('Shoot history')}</Text>
       {query.data?.sessions.map((session) => (
         <View key={session.id} style={s.card}>
-          <Text style={s.label}>{session.status === 'active' ? 'ACTIVE' : 'COMPLETED'}</Text>
-          <Text style={s.text}>{new Date(session.startedAt).toLocaleString()}</Text>
+          <Text style={s.label}>{session.status === 'active' ? t('ACTIVE') : t('COMPLETED')}</Text>
+          <Text style={s.text}>{formatDate(session.startedAt)}</Text>
           <Text style={s.muted}>
-            {session.checked} / {session.total} checked
+            {session.checked} / {session.total} {t('checked')}
           </Text>
           <Button
-            title="View shoot"
+            title={t('View shoot')}
             secondary
             onPress={() => navigation.navigate('Session', { sessionId: session.id })}
           />

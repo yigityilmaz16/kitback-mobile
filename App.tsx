@@ -1,6 +1,7 @@
+import { t, initializeLanguage, useLanguage } from './src/i18n';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -18,11 +19,13 @@ import { colors, styles as s } from './src/ui/theme';
 import type { Routes } from './src/navigation';
 const Stack = createNativeStackNavigator<Routes>();
 export default function App() {
+  const language = useLanguage();
   const [repo, setRepo] = useState<Repository | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     try {
+      initializeLanguage();
       const repository = new Repository(openDatabaseSync('kitback.db'));
       repository.initialize();
       setRepo(repository);
@@ -33,16 +36,17 @@ export default function App() {
   }, [attempt]);
   return (
     <SafeAreaProvider>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       {repo ? (
         <SafeAreaView edges={['bottom']} style={s.page}>
           <ErrorBoundary>
             <RepositoryContext.Provider value={repo}>
               <NavigationContainer
+                key={language}
                 theme={{
-                  ...DarkTheme,
+                  ...DefaultTheme,
                   colors: {
-                    ...DarkTheme.colors,
+                    ...DefaultTheme.colors,
                     primary: colors.green,
                     background: colors.bg,
                     card: colors.bg,
@@ -53,27 +57,29 @@ export default function App() {
               >
                 <Stack.Navigator
                   screenOptions={{
+                    headerShadowVisible: false,
+                    headerTitleStyle: { fontSize: 17, fontWeight: '600' },
                     headerTintColor: colors.text,
                     headerStyle: { backgroundColor: colors.bg },
                     contentStyle: { backgroundColor: colors.bg },
                   }}
                 >
                   <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'KitBack' }} />
-                  <Stack.Screen name="Kit" component={KitScreen} options={{ title: 'Kit' }} />
+                  <Stack.Screen name="Kit" component={KitScreen} options={{ title: t('Kit') }} />
                   <Stack.Screen
                     name="Equipment"
                     component={EquipmentScreen}
-                    options={{ title: 'Equipment' }}
+                    options={{ title: t('Equipment') }}
                   />
                   <Stack.Screen
                     name="Session"
                     component={SessionScreen}
-                    options={{ title: 'Shoot status' }}
+                    options={{ title: t('Shoot status') }}
                   />
                   <Stack.Screen
                     name="ReturnCheck"
                     component={ReturnCheckScreen}
-                    options={{ title: 'Return check' }}
+                    options={{ title: t('Return check') }}
                   />
                 </Stack.Navigator>
               </NavigationContainer>
@@ -86,7 +92,7 @@ export default function App() {
             <Text style={s.title}>KitBack</Text>
             {error ? (
               <Failure
-                message={'Could not open your local data. ' + error}
+                message={t('Could not open your local data. ') + error}
                 retry={() => setAttempt((x) => x + 1)}
               />
             ) : (

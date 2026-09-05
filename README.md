@@ -8,6 +8,8 @@ suite. Scanning a label records a check; it does **not** prove an item is packed
 
 ## V0.1 features
 
+- Turkish (default) and English, with a persistent TR/EN switch on Home and localized dates.
+- Warm light interface, compact equipment rows and a dedicated active-shoot panel.
 - Create kits and add, edit, or remove individual physical items.
 - Optional local equipment photos; one globally unique identifier per physical item.
 - Bind an existing QR/barcode with the camera or enter its exact value.

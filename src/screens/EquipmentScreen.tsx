@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Modal, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -72,12 +73,14 @@ export function EquipmentScreen({ navigation, route }: ScreenProps<'Equipment'>)
   }
   function remove() {
     Alert.alert(
-      'Remove this equipment?',
-      'It will be removed from this kit. Existing shoot snapshots, photos and checks stay unchanged. Its identifier remains reserved to avoid confusing physical items.',
+      t('Remove this equipment?'),
+      t(
+        'It will be removed from this kit. Existing shoot snapshots, photos and checks stay unchanged. Its identifier remains reserved to avoid confusing physical items.',
+      ),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('Cancel'), style: 'cancel' },
         {
-          text: 'Remove',
+          text: t('Remove'),
           style: 'destructive',
           onPress: () => {
             try {
@@ -97,11 +100,11 @@ export function EquipmentScreen({ navigation, route }: ScreenProps<'Equipment'>)
       contentContainerStyle={s.content}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={s.label}>ONE LABEL · ONE PHYSICAL ITEM</Text>
-      <Text style={s.title}>{equipmentId ? 'Edit equipment' : 'Add equipment'}</Text>
+      <Text style={s.label}>{t('ONE LABEL \u00B7 ONE PHYSICAL ITEM')}</Text>
+      <Text style={s.title}>{equipmentId ? t('Edit equipment') : t('Add equipment')}</Text>
       <Field
-        label="Equipment name"
-        placeholder="Sony Battery #2"
+        label={t('Equipment name')}
+        placeholder={t('Sony Battery #2')}
         value={name}
         onChangeText={setName}
         maxLength={100}
@@ -109,14 +112,14 @@ export function EquipmentScreen({ navigation, route }: ScreenProps<'Equipment'>)
       <View style={s.card}>
         <GearPhoto photo={photo} />
         <Button
-          title={busy ? 'Saving photo…' : 'Choose photo (optional)'}
+          title={busy ? t('Saving photo\u2026') : t('Choose photo (optional)')}
           secondary
           disabled={busy}
           onPress={() => void choosePhoto()}
         />
       </View>
       <Field
-        label="Unique QR / barcode value"
+        label={t('Unique QR / barcode value')}
         placeholder="KB-BATTERY-02"
         value={barcode}
         onChangeText={setBarcode}
@@ -125,7 +128,7 @@ export function EquipmentScreen({ navigation, route }: ScreenProps<'Equipment'>)
         maxLength={512}
       />
       <Button
-        title="Scan identifier"
+        title={t('Scan identifier')}
         secondary
         onPress={() => {
           accepted.current = false;
@@ -133,26 +136,28 @@ export function EquipmentScreen({ navigation, route }: ScreenProps<'Equipment'>)
         }}
       />
       <Text style={s.muted}>
-        Use a unique physical label. Retail barcodes may be identical on two batteries; those cannot
-        identify two separate items.
+        {t(
+          'Use a unique physical label. Retail barcodes may be identical on two batteries; those cannot identify two separate items.',
+        )}
       </Text>
       {equipmentId && (
         <Text style={s.muted}>
-          Edits affect future shoots only. An active shoot still expects the original label and
-          photo.
+          {t(
+            'Edits affect future shoots only. An active shoot still expects the original label and photo.',
+          )}
         </Text>
       )}
       <Failure message={error} />
       <Button
-        title="Save equipment"
+        title={t('Save equipment')}
         disabled={busy || !name.trim() || !barcode.trim()}
         onPress={save}
       />
-      {equipmentId && <Button title="Remove equipment" secondary onPress={remove} />}
+      {equipmentId && <Button title={t('Remove equipment')} secondary onPress={remove} />}
       <Modal visible={scanning} animationType="slide" onRequestClose={() => setScanning(false)}>
         <SafeAreaView style={s.page}>
           <ScrollView contentContainerStyle={s.content}>
-            <Text style={s.title}>Scan a unique label</Text>
+            <Text style={s.title}>{t('Scan a unique label')}</Text>
             {scanning && (
               <Scanner
                 onScan={(data) => {
@@ -163,7 +168,7 @@ export function EquipmentScreen({ navigation, route }: ScreenProps<'Equipment'>)
                 }}
               />
             )}
-            <Button title="Cancel" secondary onPress={() => setScanning(false)} />
+            <Button title={t('Cancel')} secondary onPress={() => setScanning(false)} />
           </ScrollView>
         </SafeAreaView>
       </Modal>

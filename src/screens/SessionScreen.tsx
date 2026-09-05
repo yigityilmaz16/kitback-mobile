@@ -1,3 +1,4 @@
+import { t, formatDate } from '../i18n';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { useState } from 'react';
 import { useRepository } from '../data/context';
@@ -22,10 +23,10 @@ export function SessionScreen({ navigation, route }: ScreenProps<'Session'>) {
     }
   }
   function undo(id: number) {
-    Alert.alert('Mark as not checked?', 'You will need to check this item again.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('Mark as not checked?'), t('You will need to check this item again.'), [
+      { text: t('Cancel'), style: 'cancel' },
       {
-        text: 'Undo check',
+        text: t('Undo check'),
         onPress: () => {
           try {
             repo.uncheck(sessionId, id);
@@ -46,25 +47,29 @@ export function SessionScreen({ navigation, route }: ScreenProps<'Session'>) {
       {session && (
         <>
           <Text style={s.label}>
-            {session.status === 'completed' ? 'SHOOT COMPLETED' : 'SHOOT IN PROGRESS'}
+            {session.status === 'completed' ? t('SHOOT COMPLETED') : t('SHOOT IN PROGRESS')}
           </Text>
           <Text style={s.title}>{session.kitName}</Text>
           <Text style={s.count}>
             {session.checked} / {session.total}
           </Text>
-          <Text style={s.text}>checked</Text>
+          <Text style={s.text}>{t('checked')}</Text>
           {missing.length === 0 ? (
             <View style={s.card}>
-              <Text style={s.heading}>Everything is checked.</Text>
+              <Text style={s.heading}>{t('Everything is checked.')}</Text>
               <Text style={s.muted}>
-                A scan confirms your check, not that the item is physically packed.
+                {t('A scan confirms your check, not that the item is physically packed.')}
               </Text>
-              {session.status === 'active' && <Button title="Complete shoot" onPress={finish} />}
+              {session.status === 'active' && (
+                <Button title={t('Complete shoot')} onPress={finish} />
+              )}
             </View>
           ) : (
             <>
-              <Text style={s.heading}>Not checked yet · {missing.length}</Text>
-              <Text style={s.muted}>Find these items before leaving the shoot.</Text>
+              <Text style={s.heading}>
+                {t('Not checked yet \u00B7')} {missing.length}
+              </Text>
+              <Text style={s.muted}>{t('Find these items before leaving the shoot.')}</Text>
               {missing.map((item) => (
                 <View key={item.id} style={[s.card, s.row]}>
                   <GearPhoto photo={item.photo} />
@@ -73,14 +78,14 @@ export function SessionScreen({ navigation, route }: ScreenProps<'Session'>) {
               ))}
               {session.status === 'active' && (
                 <Button
-                  title="Return check · scan gear"
+                  title={t('Return check \u00B7 scan gear')}
                   onPress={() => navigation.navigate('ReturnCheck', { sessionId })}
                 />
               )}
             </>
           )}
           <Failure message={error} />
-          <Text style={s.heading}>Checked equipment</Text>
+          <Text style={s.heading}>{t('Checked equipment')}</Text>
           {query.data?.items
             .filter((x) => x.checkedAt)
             .map((item) => (
@@ -89,16 +94,16 @@ export function SessionScreen({ navigation, route }: ScreenProps<'Session'>) {
                   <GearPhoto photo={item.photo} />
                   <View style={s.grow}>
                     <Text style={s.text}>{item.name}</Text>
-                    <Text style={s.label}>CHECKED</Text>
+                    <Text style={s.label}>{t('CHECKED')}</Text>
                   </View>
                 </View>
                 {session.status === 'active' && (
-                  <Button title="Undo check" secondary onPress={() => undo(item.id)} />
+                  <Button title={t('Undo check')} secondary onPress={() => undo(item.id)} />
                 )}
               </View>
             ))}
           <Text style={s.muted}>
-            Expected list captured {new Date(session.startedAt).toLocaleString()}.
+            {t('Expected list captured')} {formatDate(session.startedAt)}
           </Text>
         </>
       )}
