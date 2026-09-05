@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "KitBack",
+    "slug": "kitback-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.kitback.mobile",
+      "allowBackup": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "recordAudioAndroid": false,
+          "cameraPermission": "Scan equipment identifiers."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Choose an equipment photo.",
+          "microphonePermission": false
+        }
+      ]
+    ]
+  }
+}
