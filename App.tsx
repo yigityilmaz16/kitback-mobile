@@ -1,20 +1,36 @@
+import { useEffect,useState } from 'react';
+import { Text,View } from 'react-native';
+import { NavigationContainer,DarkTheme } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider,SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+import { openDatabaseSync } from 'expo-sqlite';
+import { Repository } from './src/data/repository';
+import { RepositoryContext } from './src/data/context';
+import { HomeScreen } from './src/screens/HomeScreen';
+import { KitScreen } from './src/screens/KitScreen';
+import { EquipmentScreen } from './src/screens/EquipmentScreen';
+import { SessionScreen } from './src/screens/SessionScreen';
+import { ReturnCheckScreen } from './src/screens/ReturnCheckScreen';
+import { Failure,Loading,message } from './src/ui/components';
+import { colors,styles as s } from './src/ui/theme';
+import type { Routes } from './src/navigation';
+const Stack=createNativeStackNavigator<Routes>();
+export default function App(){
+  const [repo,setRepo]=useState<Repository|null>(null);const [error,setError]=useState<string|null>(null);const [attempt,setAttempt]=useState(0);
+  useEffect(()=>{try{const repository=new Repository(openDatabaseSync('kitback.db'));repository.initialize();setRepo(repository);setError(null);}catch(e){setError(message(e));}},[attempt]);
+  return <SafeAreaProvider><StatusBar style="light"/>{repo?
+    <RepositoryContext.Provider value={repo}><NavigationContainer theme={{...DarkTheme,colors:{...DarkTheme.colors,primary:colors.green,background:colors.bg,card:colors.bg,text:colors.text,border:colors.line}}}>
+      <Stack.Navigator screenOptions={{headerTintColor:colors.text,headerStyle:{backgroundColor:colors.bg},contentStyle:{backgroundColor:colors.bg}}}>
+        <Stack.Screen name="Home" component={HomeScreen} options={{title:'KitBack'}}/>
+        <Stack.Screen name="Kit" component={KitScreen} options={{title:'Kit'}}/>
+        <Stack.Screen name="Equipment" component={EquipmentScreen} options={{title:'Equipment'}}/>
+        <Stack.Screen name="Session" component={SessionScreen} options={{title:'Shoot status'}}/>
+        <Stack.Screen name="ReturnCheck" component={ReturnCheckScreen} options={{title:'Return check'}}/>
+      </Stack.Navigator>
+    </NavigationContainer></RepositoryContext.Provider>:
+    <SafeAreaView style={s.page}><View style={s.content}><Text style={s.title}>KitBack</Text>
+      {error?<Failure message={'Could not open your local data. '+error} retry={()=>setAttempt(x=>x+1)}/>:<Loading/>}
+    </View></SafeAreaView>}
+  </SafeAreaProvider>;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
