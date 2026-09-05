@@ -111,6 +111,14 @@ export function Scanner({ onScan }: { onScan: (data: string) => void }) {
       />
       <Button
         secondary
+        title="Restart camera"
+        onPress={() => {
+          setError(null);
+          setGeneration((x) => x + 1);
+        }}
+      />
+      <Button
+        secondary
         title={torch ? 'Turn flashlight off' : 'Turn flashlight on'}
         onPress={() => setTorch((x) => !x)}
       />

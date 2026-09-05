@@ -1,10 +1,11 @@
-// A camera can report the same stationary label continuously. Ignore it until a
-// different label enters the frame so an old callback cannot overwrite feedback.
+// Suppress rapid repeats, but always permit retrying the same label later.
 export class ScanGate {
   private lastCode: string | null = null;
-  accept(code: string, _time = Date.now()): boolean {
-    if (code === this.lastCode) return false;
+  private acceptedAt = -Infinity;
+  accept(code: string, time = Date.now()): boolean {
+    if (code === this.lastCode && time - this.acceptedAt < 1600) return false;
     this.lastCode = code;
+    this.acceptedAt = time;
     return true;
   }
 }

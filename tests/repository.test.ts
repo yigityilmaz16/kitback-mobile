@@ -126,6 +126,8 @@ test('camera gate suppresses same code but permits different rapid codes and lat
   assert.equal(gate.accept('A', 50), false);
   assert.equal(gate.accept('B', 60), true);
   assert.equal(gate.accept('A', 1700), true);
+  assert.equal(gate.accept('A', 1800), false);
+  assert.equal(gate.accept('A', 3400), true);
 });
 
 test('old snapshot identifiers cannot be reassigned after editing an item', () => {
