@@ -34,10 +34,12 @@ export function ReturnCheckScreen({ navigation, route }: ScreenProps<'ReturnChec
   const [tone, setTone] = useState<'good' | 'warn'>('good');
   const [manual, setManual] = useState(false);
   const [code, setCode] = useState('');
+  const [lastScanned, setLastScanned] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const query = useLiveQuery(() => repo.session(sessionId));
   function scan(raw: string, fromCamera = true) {
     if (fromCamera && !gate.current.accept(raw)) return;
+    setLastScanned(raw);
     try {
       const result = repo.scan(sessionId, raw);
       setNotice(feedback(result));
@@ -104,6 +106,11 @@ export function ReturnCheckScreen({ navigation, route }: ScreenProps<'ReturnChec
             <Text style={[s.text, { color: tone === 'good' ? colors.green : colors.amber }]}>
               {notice}
             </Text>
+            {lastScanned !== null && (
+              <Text style={s.muted} numberOfLines={2}>
+                Last code read: {lastScanned}
+              </Text>
+            )}
           </View>
           <Failure message={error} />
           <Button
